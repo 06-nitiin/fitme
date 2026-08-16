@@ -10,27 +10,43 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { BrandMark } from "./BrandMark";
 
+export type AppSection = "home" | "avatar";
+
 type AppShellProps = {
-  currentSection: string;
+  activeSection: AppSection;
+  onNavigate: (section: AppSection) => void;
   children: ReactNode;
 };
 
 type NavigationItem = {
+  id: "home" | "wardrobe" | "builder" | "outfits" | "avatar" | "settings";
   label: string;
   icon: LucideIcon;
   isReady?: boolean;
 };
 
 const navigation: NavigationItem[] = [
-  { label: "Home", icon: House, isReady: true },
-  { label: "My Wardrobe", icon: Shirt },
-  { label: "Outfit Builder", icon: Sparkles },
-  { label: "Saved Outfits", icon: Bookmark },
-  { label: "My Avatar", icon: UserRound },
-  { label: "Settings", icon: Settings2 },
+  { id: "home", label: "Home", icon: House, isReady: true },
+  { id: "wardrobe", label: "My Wardrobe", icon: Shirt },
+  { id: "builder", label: "Outfit Builder", icon: Sparkles },
+  { id: "outfits", label: "Saved Outfits", icon: Bookmark },
+  { id: "avatar", label: "My Avatar", icon: UserRound, isReady: true },
+  { id: "settings", label: "Settings", icon: Settings2 },
 ];
 
-export function AppShell({ currentSection, children }: AppShellProps) {
+function getSectionTitle(activeSection: AppSection): string {
+  return navigation.find((item) => item.id === activeSection)?.label ?? "FitMe";
+}
+
+export function AppShell({ activeSection, onNavigate, children }: AppShellProps) {
+  const currentTitle = getSectionTitle(activeSection);
+
+  function handleNavigation(item: NavigationItem) {
+    if (item.id === "home" || item.id === "avatar") {
+      onNavigate(item.id);
+    }
+  }
+
   return (
     <div className="min-h-screen pb-24 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:pb-0">
       <aside className="hidden min-h-screen border-r-2 border-fitme-plum/25 bg-fitme-lavender/80 px-4 py-6 backdrop-blur lg:flex lg:flex-col">
@@ -41,13 +57,14 @@ export function AppShell({ currentSection, children }: AppShellProps) {
         <nav aria-label="Primary navigation" className="space-y-2">
           {navigation.map((item) => {
             const Icon = item.icon;
-            const isActive = item.label === currentSection;
+            const isActive = item.id === activeSection;
 
             return (
               <button
-                key={item.label}
+                key={item.id}
                 type="button"
                 disabled={!item.isReady}
+                onClick={() => handleNavigation(item)}
                 aria-current={isActive ? "page" : undefined}
                 title={item.isReady ? undefined : `${item.label} is coming in a later milestone`}
                 className={`flex w-full items-center gap-3 rounded-2xl border-2 px-3 py-3 text-left text-sm font-extrabold transition ${
@@ -80,7 +97,7 @@ export function AppShell({ currentSection, children }: AppShellProps) {
               <BrandMark compact />
             </div>
             <div>
-              <p className="font-display text-lg leading-5 text-fitme-plum">{currentSection}</p>
+              <p className="font-display text-lg leading-5 text-fitme-plum">{currentTitle}</p>
               <p className="mt-1 text-[0.66rem] font-black uppercase tracking-[0.17em] text-fitme-plum/70">
                 your style space
               </p>
@@ -102,13 +119,14 @@ export function AppShell({ currentSection, children }: AppShellProps) {
       >
         {navigation.slice(0, 5).map((item) => {
           const Icon = item.icon;
-          const isActive = item.label === currentSection;
+          const isActive = item.id === activeSection;
 
           return (
             <button
-              key={item.label}
+              key={item.id}
               type="button"
               disabled={!item.isReady}
+              onClick={() => handleNavigation(item)}
               aria-current={isActive ? "page" : undefined}
               title={item.isReady ? undefined : `${item.label} is coming in a later milestone`}
               className={`grid min-w-12 place-items-center rounded-2xl px-2 py-1.5 text-fitme-plum ${
