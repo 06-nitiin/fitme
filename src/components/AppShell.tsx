@@ -10,7 +10,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { BrandMark } from "./BrandMark";
 
-export type AppSection = "home" | "wardrobe" | "avatar";
+export type AppSection = "home" | "wardrobe" | "builder" | "avatar";
 
 type AppShellProps = {
   activeSection: AppSection;
@@ -28,7 +28,7 @@ type NavigationItem = {
 const navigation: NavigationItem[] = [
   { id: "home", label: "Home", icon: House, isReady: true },
   { id: "wardrobe", label: "My Wardrobe", icon: Shirt, isReady: true },
-  { id: "builder", label: "Outfit Builder", icon: Sparkles },
+  { id: "builder", label: "Outfit Builder", icon: Sparkles, isReady: true },
   { id: "outfits", label: "Saved Outfits", icon: Bookmark },
   { id: "avatar", label: "My Avatar", icon: UserRound, isReady: true },
   { id: "settings", label: "Settings", icon: Settings2 },
@@ -42,7 +42,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
   const currentTitle = getSectionTitle(activeSection);
 
   function handleNavigation(item: NavigationItem) {
-    if (item.id === "home" || item.id === "wardrobe" || item.id === "avatar") {
+    if (item.id === "home" || item.id === "wardrobe" || item.id === "builder" || item.id === "avatar") {
       onNavigate(item.id);
     }
   }
@@ -86,7 +86,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
             <Sparkles className="size-4 text-fitme-blush" aria-hidden="true" />
             Style tip
           </div>
-          <p className="text-sm font-bold leading-5">Start with one piece you already love to wear.</p>
+          <p className="text-sm font-bold leading-5">Change one layer at a time and keep the pieces that feel right.</p>
         </div>
       </aside>
 
