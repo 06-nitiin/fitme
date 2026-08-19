@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { BookmarkPlus, Sparkles } from "lucide-react";
 import { CategoryCycler } from "../components/outfit/CategoryCycler";
 import { OutfitStage } from "../components/outfit/OutfitStage";
+import { RecommendationPanel } from "../components/outfit/RecommendationPanel";
 import { starterWardrobe } from "../data/starterWardrobe";
-import { loadFromStorage, STORAGE_KEYS } from "../lib/storage";
-import { getItemsForSlot } from "../lib/wardrobe";
-import type { AvatarProfile, ClothingItem, OutfitSelections, OutfitSlot } from "../types/fitme";
+import { createOutfitRecommendations } from "../lib/recommendations";
+import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../lib/storage";
+import { createFitMeId, getItemsForSlot } from "../lib/wardrobe";
+import type { AvatarProfile, ClothingItem, OutfitRecommendation, OutfitSelections, OutfitSlot, SavedOutfit } from "../types/fitme";
 
 const defaultAvatar: AvatarProfile = {
   skinTone: "Peach",
@@ -41,6 +43,7 @@ export function OutfitBuilder() {
   const [wardrobe] = useState<ClothingItem[]>(() => loadFromStorage(STORAGE_KEYS.wardrobe, starterWardrobe));
   const [avatar] = useState<AvatarProfile>(() => loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar));
   const [selections, setSelections] = useState<OutfitSelections>(() => makeInitialSelections(wardrobe));
+  const [saveMessage, setSaveMessage] = useState("");
 
   const itemsBySlot = useMemo(
     () =>
@@ -71,17 +74,56 @@ export function OutfitBuilder() {
   }
 
   const completedSlots = outfitSlots.filter(({ slot }) => getSelectedItem(slot)).length;
+  const recommendations = useMemo(() => createOutfitRecommendations(wardrobe), [wardrobe]);
+
+  function applyRecommendation(recommendation: OutfitRecommendation) {
+    setSelections(recommendation.selections);
+    setSaveMessage(`${recommendation.style} is on the outfit mirror. Tweak any layer you like.`);
+  }
+
+  function saveCurrentOutfit() {
+    if (Object.keys(selections).length === 0) {
+      setSaveMessage("Pick at least one piece before saving a look.");
+      return;
+    }
+
+    const savedOutfits = loadFromStorage<SavedOutfit[]>(STORAGE_KEYS.savedOutfits, []);
+    const suggestedName = `Look ${savedOutfits.length + 1}`;
+    const enteredName = window.prompt("Give this look a name", suggestedName);
+
+    if (enteredName === null) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const savedOutfit: SavedOutfit = {
+      id: createFitMeId("outfit"),
+      name: enteredName.trim() || suggestedName,
+      selections,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    saveToStorage(STORAGE_KEYS.savedOutfits, [savedOutfit, ...savedOutfits]);
+    setSaveMessage(`“${savedOutfit.name}” is tucked into your saved looks.`);
+  }
 
   return (
     <div className="space-y-6 sm:space-y-8">
       <section className="fitme-panel overflow-hidden p-5 sm:p-8">
-        <div className="max-w-2xl">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-fitme-plum/35 bg-fitme-cream/80 px-3 py-1.5 text-xs font-black uppercase tracking-[0.13em] text-fitme-plum">
             <Sparkles className="size-3.5 text-fitme-blush" aria-hidden="true" />
             Outfit builder
           </div>
           <h1 className="mt-4 font-display text-4xl leading-none text-fitme-plum sm:text-5xl">Play with a whole look.</h1>
           <p className="mt-4 text-base font-bold leading-7 text-fitme-plum/75 sm:text-lg">Use the little arrows to change one piece at a time. Your other layers will stay exactly where you left them.</p>
+          </div>
+          <button type="button" onClick={saveCurrentOutfit} className="fitme-tap inline-flex items-center gap-2 rounded-2xl border-2 border-fitme-plum bg-fitme-blush px-4 py-3 text-sm font-black text-white shadow-[0_4px_0_rgb(87_41_88_/_34%)] focus-visible:outline-2 focus-visible:outline-offset-4">
+            <BookmarkPlus className="size-4" aria-hidden="true" />
+            Save this look
+          </button>
         </div>
       </section>
 
@@ -108,6 +150,10 @@ export function OutfitBuilder() {
         </div>
       </section>
 
+      {saveMessage && <p className="rounded-2xl border-2 border-fitme-plum/30 bg-pink-100/75 px-4 py-3 text-sm font-bold text-fitme-plum">{saveMessage}</p>}
+
+      <RecommendationPanel recommendations={recommendations} wardrobe={wardrobe} onApply={applyRecommendation} />
+
       <aside className="rounded-3xl border-2 border-dashed border-fitme-plum/35 bg-white/50 p-5 text-fitme-plum sm:flex sm:items-center sm:justify-between sm:gap-6">
         <div>
           <p className="font-display text-lg">Your little look is taking shape</p>
@@ -118,4 +164,3 @@ export function OutfitBuilder() {
     </div>
   );
 }
-
