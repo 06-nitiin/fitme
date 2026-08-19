@@ -1,14 +1,16 @@
-import { Tag } from "lucide-react";
+import { Pencil, Tag, Trash2 } from "lucide-react";
 import type { ClothingItem } from "../../types/fitme";
 import { GarmentIllustration } from "./GarmentIllustration";
 
 type ClothingCardProps = {
   item: ClothingItem;
+  onEdit: (item: ClothingItem) => void;
+  onDelete: (item: ClothingItem) => void;
 };
 
-export function ClothingCard({ item }: ClothingCardProps) {
+export function ClothingCard({ item, onEdit, onDelete }: ClothingCardProps) {
   return (
-    <article className="fitme-tap overflow-hidden rounded-3xl border-2 border-fitme-plum/35 bg-fitme-cream/85 p-3 shadow-[0_3px_0_rgb(87_41_88_/_13%)]">
+    <article className="overflow-hidden rounded-3xl border-2 border-fitme-plum/35 bg-fitme-cream/85 p-3 shadow-[0_3px_0_rgb(87_41_88_/_13%)]">
       <GarmentIllustration item={item} />
       <div className="px-1 pb-1 pt-4">
         <div className="flex items-start justify-between gap-2">
@@ -25,6 +27,15 @@ export function ClothingCard({ item }: ClothingCardProps) {
           <span className="rounded-full border border-fitme-plum/20 bg-pink-100 px-2 py-1 text-fitme-plum/75">{item.color}</span>
           <span className="rounded-full border border-fitme-plum/20 bg-violet-100 px-2 py-1 text-fitme-plum/75">{item.brand}</span>
           {item.size && <span className="rounded-full border border-fitme-plum/20 bg-sky-100 px-2 py-1 text-fitme-plum/75">{item.size}</span>}
+        </div>
+
+        <div className="mt-4 flex gap-2 border-t-2 border-dashed border-fitme-plum/20 pt-3">
+          <button type="button" onClick={() => onEdit(item)} className="fitme-tap inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border-2 border-fitme-plum/30 bg-white/70 px-2 py-2 text-xs font-black text-fitme-plum" aria-label={`Edit ${item.name}`}>
+            <Pencil className="size-3.5" aria-hidden="true" /> Edit
+          </button>
+          <button type="button" onClick={() => onDelete(item)} className="fitme-tap inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-rose-300 bg-rose-50 px-2 py-2 text-xs font-black text-rose-700" aria-label={`Delete ${item.name}`}>
+            <Trash2 className="size-3.5" aria-hidden="true" /> Delete
+          </button>
         </div>
       </div>
     </article>

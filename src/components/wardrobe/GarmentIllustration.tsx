@@ -20,6 +20,14 @@ function getGarmentColour(colour: string): string {
 }
 
 export function GarmentIllustration({ item }: GarmentIllustrationProps) {
+  if (item.imageUrl) {
+    return (
+      <div className="h-40 overflow-hidden rounded-2xl border-2 border-fitme-plum/20 bg-white/70">
+        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
   const colour = getGarmentColour(item.color);
   const lineColour = item.color === "Black" ? "#f8edf9" : "#63386a";
 
@@ -78,3 +86,4 @@ export function GarmentIllustration({ item }: GarmentIllustrationProps) {
     </div>
   );
 }
+
