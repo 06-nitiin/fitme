@@ -10,7 +10,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { BrandMark } from "./BrandMark";
 
-export type AppSection = "home" | "avatar";
+export type AppSection = "home" | "wardrobe" | "avatar";
 
 type AppShellProps = {
   activeSection: AppSection;
@@ -27,7 +27,7 @@ type NavigationItem = {
 
 const navigation: NavigationItem[] = [
   { id: "home", label: "Home", icon: House, isReady: true },
-  { id: "wardrobe", label: "My Wardrobe", icon: Shirt },
+  { id: "wardrobe", label: "My Wardrobe", icon: Shirt, isReady: true },
   { id: "builder", label: "Outfit Builder", icon: Sparkles },
   { id: "outfits", label: "Saved Outfits", icon: Bookmark },
   { id: "avatar", label: "My Avatar", icon: UserRound, isReady: true },
@@ -42,7 +42,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
   const currentTitle = getSectionTitle(activeSection);
 
   function handleNavigation(item: NavigationItem) {
-    if (item.id === "home" || item.id === "avatar") {
+    if (item.id === "home" || item.id === "wardrobe" || item.id === "avatar") {
       onNavigate(item.id);
     }
   }
