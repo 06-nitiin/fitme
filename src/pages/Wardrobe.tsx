@@ -143,7 +143,12 @@ export function Wardrobe() {
       </section>
 
       {isFormOpen && (
-        <ClothingForm initialItem={editingItem} onCancel={closeForm} onSave={handleSave} />
+        <ClothingForm
+          key={editingItem?.id ?? "new-clothing"}
+          initialItem={editingItem}
+          onCancel={closeForm}
+          onSave={handleSave}
+        />
       )}
 
       {visibleWardrobe.length > 0 ? (

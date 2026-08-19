@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { CLOTHING_CATEGORIES, type ClothingCategory, type ClothingItem } from "../../types/fitme";
 
@@ -51,12 +51,6 @@ export function ClothingForm({ initialItem, onCancel, onSave }: ClothingFormProp
   const [formError, setFormError] = useState("");
   const [imageMessage, setImageMessage] = useState("");
   const isEditing = Boolean(initialItem);
-
-  useEffect(() => {
-    setDraft(makeDraft(initialItem));
-    setFormError("");
-    setImageMessage("");
-  }, [initialItem]);
 
   function updateDraft<Key extends keyof Draft>(key: Key, value: Draft[Key]) {
     setDraft((currentDraft) => ({ ...currentDraft, [key]: value }));
