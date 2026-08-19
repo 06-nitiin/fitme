@@ -6,11 +6,17 @@ export type AppearanceField =
   | "hairColor"
   | "faceShape"
   | "eyeColor"
-  | "glasses";
+  | "glasses"
+  | "facialHair"
+  | "height"
+  | "build"
+  | "proportions"
+  | "tattoos";
 
 type AvatarControlsProps = {
   avatar: AvatarProfile;
   onChange: (field: AppearanceField, value: string | boolean) => void;
+  onToggleAccessory: (accessory: string) => void;
 };
 
 type OptionGroupProps = {
@@ -75,7 +81,32 @@ function OptionGroup({ label, options, selectedValue, onSelect, colourOptions }:
   );
 }
 
-export function AvatarControls({ avatar, onChange }: AvatarControlsProps) {
+type ToggleButtonProps = {
+  label: string;
+  isSelected: boolean;
+  onClick: () => void;
+};
+
+function ToggleButton({ label, isSelected, onClick }: ToggleButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={isSelected}
+      className={`fitme-tap rounded-xl border-2 px-4 py-2 text-xs font-extrabold transition focus-visible:outline-2 focus-visible:outline-offset-2 ${
+        isSelected
+          ? "border-fitme-plum bg-pink-200 text-fitme-plum shadow-[0_2px_0_rgb(87_41_88_/_22%)]"
+          : "border-fitme-plum/30 bg-white/65 text-fitme-plum/75 hover:bg-pink-50"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+export function AvatarControls({ avatar, onChange, onToggleAccessory }: AvatarControlsProps) {
+  const accessoryOptions = ["Pearl necklace", "Hoop earrings", "Ribbon hair clip"];
+
   return (
     <div className="space-y-7">
       <OptionGroup
@@ -114,18 +145,59 @@ export function AvatarControls({ avatar, onChange }: AvatarControlsProps) {
 
       <fieldset>
         <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Glasses</legend>
-        <button
-          type="button"
-          onClick={() => onChange("glasses", !avatar.glasses)}
-          aria-pressed={avatar.glasses}
-          className={`fitme-tap mt-2 rounded-xl border-2 px-4 py-2 text-xs font-extrabold transition focus-visible:outline-2 focus-visible:outline-offset-2 ${
-            avatar.glasses
-              ? "border-fitme-plum bg-pink-200 text-fitme-plum shadow-[0_2px_0_rgb(87_41_88_/_22%)]"
-              : "border-fitme-plum/30 bg-white/65 text-fitme-plum/75 hover:bg-pink-50"
-          }`}
-        >
-          {avatar.glasses ? "Glasses on" : "Glasses off"}
-        </button>
+        <div className="mt-2">
+          <ToggleButton label={avatar.glasses ? "Glasses on" : "Glasses off"} isSelected={avatar.glasses} onClick={() => onChange("glasses", !avatar.glasses)} />
+        </div>
+      </fieldset>
+
+      <div className="border-t-2 border-dashed border-fitme-plum/25 pt-7">
+        <p className="font-display text-lg text-fitme-plum">A few more you-details</p>
+      </div>
+
+      <OptionGroup
+        label="Facial hair"
+        options={["None", "Light stubble", "Short beard", "Moustache"]}
+        selectedValue={avatar.facialHair}
+        onSelect={(value) => onChange("facialHair", value)}
+      />
+      <OptionGroup
+        label="Height"
+        options={["Petite", "Average", "Tall"]}
+        selectedValue={avatar.height}
+        onSelect={(value) => onChange("height", value)}
+      />
+      <OptionGroup
+        label="Build"
+        options={["Slim", "Balanced", "Athletic", "Curvy"]}
+        selectedValue={avatar.build}
+        onSelect={(value) => onChange("build", value)}
+      />
+      <OptionGroup
+        label="General proportions"
+        options={["Balanced", "Broad shoulders", "Soft curves"]}
+        selectedValue={avatar.proportions}
+        onSelect={(value) => onChange("proportions", value)}
+      />
+
+      <fieldset>
+        <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Tattoo</legend>
+        <div className="mt-2">
+          <ToggleButton label={avatar.tattoos ? "Tiny tattoo on" : "No tattoo"} isSelected={avatar.tattoos} onClick={() => onChange("tattoos", !avatar.tattoos)} />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Accessories</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {accessoryOptions.map((accessory) => (
+            <ToggleButton
+              key={accessory}
+              label={accessory}
+              isSelected={avatar.accessories.includes(accessory)}
+              onClick={() => onToggleAccessory(accessory)}
+            />
+          ))}
+        </div>
       </fieldset>
     </div>
   );

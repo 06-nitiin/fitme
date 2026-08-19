@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshCcw, Sparkles } from "lucide-react";
-import type { AvatarProfile } from "../types/fitme";
 import { AvatarControls, type AppearanceField } from "../components/avatar/AvatarControls";
 import { AvatarPreview } from "../components/avatar/AvatarPreview";
+import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../lib/storage";
+import type { AvatarProfile } from "../types/fitme";
 
 const defaultAvatar: AvatarProfile = {
   skinTone: "Peach",
@@ -14,21 +15,38 @@ const defaultAvatar: AvatarProfile = {
   glasses: false,
   height: "Average",
   build: "Balanced",
-  proportions: "Standard",
+  proportions: "Balanced",
   tattoos: false,
   accessories: [],
 };
 
 export function Avatar() {
-  const [avatar, setAvatar] = useState<AvatarProfile>(defaultAvatar);
+  const [avatar, setAvatar] = useState<AvatarProfile>(() =>
+    loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar),
+  );
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.avatar, avatar);
+  }, [avatar]);
 
   function handleAppearanceChange(field: AppearanceField, value: string | boolean) {
     setAvatar((currentAvatar) => {
-      if (field === "glasses") {
-        return { ...currentAvatar, glasses: Boolean(value) };
+      if (field === "glasses" || field === "tattoos") {
+        return { ...currentAvatar, [field]: Boolean(value) };
       }
 
       return { ...currentAvatar, [field]: String(value) };
+    });
+  }
+
+  function toggleAccessory(accessory: string) {
+    setAvatar((currentAvatar) => {
+      const isSelected = currentAvatar.accessories.includes(accessory);
+      const accessories = isSelected
+        ? currentAvatar.accessories.filter((item) => item !== accessory)
+        : [...currentAvatar.accessories, accessory];
+
+      return { ...currentAvatar, accessories };
     });
   }
 
@@ -63,23 +81,22 @@ export function Avatar() {
 
         <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(22rem,1fr)] xl:items-start">
           <AvatarPreview avatar={avatar} />
-          <div className="fitme-inset rounded-[1.8rem] p-5 sm:p-7">
+          <div className="fitme-inset max-h-[50rem] overflow-y-auto rounded-[1.8rem] p-5 sm:p-7">
             <div className="mb-6 border-b-2 border-dashed border-fitme-plum/30 pb-4">
               <p className="font-display text-xl text-fitme-plum">Pick your details</p>
-              <p className="mt-1 text-sm font-bold leading-5 text-fitme-plum/65">This is the first layer. More personal touches are coming next.</p>
+              <p className="mt-1 text-sm font-bold leading-5 text-fitme-plum/65">Your choices save automatically in this browser.</p>
             </div>
-            <AvatarControls avatar={avatar} onChange={handleAppearanceChange} />
+            <AvatarControls avatar={avatar} onChange={handleAppearanceChange} onToggleAccessory={toggleAccessory} />
           </div>
         </div>
       </section>
 
       <aside className="rounded-3xl border-2 border-dashed border-fitme-plum/35 bg-white/50 p-5 text-fitme-plum">
-        <p className="font-display text-lg">Tiny build note</p>
+        <p className="font-display text-lg">Saved in your style space</p>
         <p className="mt-1 text-sm font-bold leading-6 text-fitme-plum/70">
-          Your choices are working live in this screen. The next Avatar commit will remember them after a browser refresh and add the remaining body and personal-detail controls.
+          Try a few combinations, then refresh the browser. Your mini-me should look exactly the same when you return.
         </p>
       </aside>
     </div>
   );
 }
-

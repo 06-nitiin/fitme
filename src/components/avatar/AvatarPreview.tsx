@@ -41,6 +41,12 @@ const hairStyleClasses: Record<string, string> = {
   Buzzed: "h-11 rounded-t-[45%]",
 };
 
+function getBodyWidth(build: string): string {
+  if (build === "Slim") return "w-52";
+  if (build === "Athletic" || build === "Curvy") return "w-64";
+  return "w-60";
+}
+
 export function AvatarPreview({ avatar }: AvatarPreviewProps) {
   const skinTone = skinToneColours[avatar.skinTone] ?? skinToneColours.Peach;
   const hairColour = hairColours[avatar.hairColor] ?? hairColours.Brown;
@@ -49,15 +55,19 @@ export function AvatarPreview({ avatar }: AvatarPreviewProps) {
   const hairStyle = hairStyleClasses[avatar.hairStyle] ?? hairStyleClasses["Soft waves"];
   const wearsPonytail = avatar.hairStyle === "High ponytail";
   const hasCurls = avatar.hairStyle === "Curly bob";
+  const wearsPearls = avatar.accessories.includes("Pearl necklace");
+  const wearsEarrings = avatar.accessories.includes("Hoop earrings");
+  const wearsRibbon = avatar.accessories.includes("Ribbon hair clip");
+  const bodyWidth = getBodyWidth(avatar.build);
 
   return (
-    <div className="relative mx-auto flex min-h-[30rem] max-w-md items-end justify-center overflow-hidden rounded-[2.2rem] border-2 border-fitme-plum/55 bg-gradient-to-b from-pink-100 via-violet-100 to-sky-100 px-6 pt-10 shadow-[0_5px_0_rgb(87_41_88_/_20%)]">
+    <div className="relative mx-auto flex min-h-[31rem] max-w-md items-end justify-center overflow-hidden rounded-[2.2rem] border-2 border-fitme-plum/55 bg-gradient-to-b from-pink-100 via-violet-100 to-sky-100 px-6 pt-10 shadow-[0_5px_0_rgb(87_41_88_/_20%)]">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(126,80,140,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(126,80,140,0.14)_1px,transparent_1px)] bg-[size:22px_22px]" />
       <span className="absolute left-8 top-8 font-display text-2xl text-fitme-blush" aria-hidden="true">✦</span>
       <span className="absolute right-9 top-16 font-display text-xl text-amber-400" aria-hidden="true">♥</span>
       <div className="absolute bottom-7 h-12 w-64 rounded-full bg-fitme-plum/20 blur-lg" aria-hidden="true" />
 
-      <div className="relative z-10 flex flex-col items-center">
+      <div className={`relative z-10 flex flex-col items-center ${avatar.height === "Tall" ? "-mb-1 scale-[1.04]" : avatar.height === "Petite" ? "mb-2 scale-[0.95]" : ""}`}>
         {wearsPonytail && (
           <div
             className="absolute -right-9 top-14 h-20 w-16 rounded-[50%_50%_60%_35%] border-2 border-fitme-plum/35"
@@ -89,12 +99,23 @@ export function AvatarPreview({ avatar }: AvatarPreviewProps) {
             <div className="absolute right-[25%] top-[43%] size-3 rounded-full border border-fitme-plum/40" style={{ backgroundColor: eyeColour }} />
             <div className="absolute left-[34%] right-[34%] top-[62%] h-1.5 rounded-full bg-[#c96f7e]/65" />
 
+            {avatar.facialHair === "Light stubble" && <div className="absolute inset-x-[33%] top-[67%] border-t-2 border-dotted border-fitme-plum/60" aria-hidden="true" />}
+            {avatar.facialHair === "Short beard" && <div className="absolute inset-x-[29%] top-[66%] h-5 rounded-b-[45%] border-b-4 border-fitme-plum/65" aria-hidden="true" />}
+            {avatar.facialHair === "Moustache" && <div className="absolute left-[38%] right-[38%] top-[61%] h-1.5 rounded-full bg-fitme-plum/70" aria-hidden="true" />}
+
             {avatar.glasses && (
               <div className="absolute inset-x-[14%] top-[36%] flex items-center justify-between" aria-label="Wearing glasses">
                 <span className="size-9 rounded-full border-[3px] border-fitme-plum/75" />
                 <span className="h-[3px] w-3 bg-fitme-plum/75" />
                 <span className="size-9 rounded-full border-[3px] border-fitme-plum/75" />
               </div>
+            )}
+
+            {wearsEarrings && (
+              <>
+                <span className="absolute -left-2 top-[58%] size-3 rounded-full border-2 border-amber-400" aria-hidden="true" />
+                <span className="absolute -right-2 top-[58%] size-3 rounded-full border-2 border-amber-400" aria-hidden="true" />
+              </>
             )}
           </div>
 
@@ -105,19 +126,24 @@ export function AvatarPreview({ avatar }: AvatarPreviewProps) {
               aria-hidden="true"
             />
           )}
+
+          {wearsRibbon && <span className="absolute right-5 top-8 text-xl text-fitme-blush" aria-label="Wearing a ribbon hair clip">♥</span>}
         </div>
 
-        <div className="relative -mt-5 h-44 w-60 overflow-hidden rounded-t-[48%] border-2 border-fitme-plum/35 bg-fitme-cream">
+        <div className={`relative -mt-5 h-44 overflow-hidden rounded-t-[48%] border-2 border-fitme-plum/35 bg-fitme-cream ${bodyWidth}`}>
           <div className="absolute inset-x-10 top-0 h-12 rounded-b-[50%] border-x-2 border-b-2 border-fitme-plum/20" style={{ backgroundColor: skinTone }} />
           <div className="absolute inset-x-0 bottom-0 h-32 rounded-t-[48%] bg-pink-300" />
           <span className="absolute left-1/2 top-16 -translate-x-1/2 text-2xl text-fitme-plum/65" aria-hidden="true">♥</span>
+          {wearsPearls && <span className="absolute left-1/2 top-7 -translate-x-1/2 text-base tracking-[0.22em] text-white" aria-label="Wearing a pearl necklace">••••</span>}
+          {avatar.tattoos && <span className="absolute right-5 top-16 text-lg text-fitme-plum/75" aria-label="Tiny star tattoo">✦</span>}
         </div>
       </div>
 
       <div className="absolute bottom-5 left-5 rounded-xl border-2 border-fitme-plum bg-fitme-cream/90 px-3 py-2 shadow-[0_2px_0_rgb(87_41_88_/_18%)]">
         <p className="font-display text-base leading-none text-fitme-plum">your mini-me</p>
-        <p className="mt-1 text-[0.55rem] font-black uppercase tracking-[0.12em] text-fitme-plum/70">changing with you</p>
+        <p className="mt-1 text-[0.55rem] font-black uppercase tracking-[0.12em] text-fitme-plum/70">saved in your browser</p>
       </div>
     </div>
   );
 }
+
