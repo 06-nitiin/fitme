@@ -4,19 +4,19 @@ const firstSteps = [
   {
     number: "01",
     title: "Make your mini-me",
-    description: "Choose the little details that feel like you.",
+    description: "Your little details are saved right in your browser.",
     icon: UserRound,
   },
   {
     number: "02",
     title: "Add your favourites",
-    description: "Pop in the clothes already hanging in your room.",
+    description: "Build a rail from the clothes already in your room.",
     icon: Shirt,
   },
   {
     number: "03",
-    title: "Play with a look",
-    description: "Try combinations before the real mirror moment.",
+    title: "Build and save a look",
+    description: "Mix your pieces, then tuck favourite combinations away.",
     icon: Sparkles,
   },
 ];
@@ -78,25 +78,15 @@ export function Home() {
           <p className="mt-5 max-w-md text-base font-bold leading-7 text-fitme-plum/75 sm:text-lg">
             Build a tiny digital closet, then make every outfit feel a little more you.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <button
-              type="button"
-              disabled
-              title="Avatar creation arrives in a later milestone"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl border-2 border-fitme-plum bg-fitme-blush px-5 py-3 text-sm font-black text-white opacity-70 shadow-[0_4px_0_rgb(87_41_88_/_34%)]"
-            >
-              Create my avatar
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              disabled
-              title="The outfit builder arrives in a later milestone"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-2xl border-2 border-fitme-plum/55 bg-fitme-cream/85 px-5 py-3 text-sm font-black text-fitme-plum opacity-70 shadow-[0_3px_0_rgb(87_41_88_/_18%)]"
-            >
-              Peek at outfit builder
+          <div className="mt-7 flex flex-wrap gap-3 text-sm font-black">
+            <span className="inline-flex items-center gap-2 rounded-2xl border-2 border-fitme-plum bg-fitme-blush px-5 py-3 text-white shadow-[0_4px_0_rgb(87_41_88_/_34%)]">
+              <UserRound className="size-4" aria-hidden="true" />
+              Avatar ready to style
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-2xl border-2 border-fitme-plum/55 bg-fitme-cream/85 px-5 py-3 text-fitme-plum shadow-[0_3px_0_rgb(87_41_88_/_18%)]">
               <Sparkles className="size-4 text-amber-500" aria-hidden="true" />
-            </button>
+              Outfit builder unlocked
+            </span>
           </div>
         </div>
 
@@ -112,9 +102,9 @@ export function Home() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="font-display text-xl text-fitme-plum">Your first little style loop</p>
-            <p className="mt-1 text-sm font-bold text-fitme-plum/70">Start simple. The wardrobe grows when you do.</p>
+            <p className="mt-1 text-sm font-bold text-fitme-plum/70">Your avatar, wardrobe, builder, and little lookbook all live here.</p>
           </div>
-          <span className="rounded-full border-2 border-dashed border-fitme-plum/35 px-3 py-1 text-xs font-black text-fitme-plum/75">3 easy steps</span>
+          <span className="rounded-full border-2 border-dashed border-fitme-plum/35 px-3 py-1 text-xs font-black text-fitme-plum/75">your full style loop</span>
         </div>
 
         <div className="mt-6 grid gap-3 md:grid-cols-3">
@@ -132,7 +122,7 @@ export function Home() {
                 <h2 className="mt-5 text-base font-black text-fitme-plum">{step.title}</h2>
                 <p className="mt-1.5 text-sm font-bold leading-5 text-fitme-plum/70">{step.description}</p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-black text-fitme-plum/70">
-                  Waiting for you <ArrowRight className="size-3.5" aria-hidden="true" />
+                  Ready in your menu <ArrowRight className="size-3.5" aria-hidden="true" />
                 </span>
               </article>
             );
@@ -142,4 +132,3 @@ export function Home() {
     </div>
   );
 }
-
