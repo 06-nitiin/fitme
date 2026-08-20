@@ -32,6 +32,11 @@ const outfitSlots: Array<{ slot: OutfitSlot; label: string }> = [
   { slot: "accessory", label: "Accessories" },
 ];
 
+type OutfitBuilderProps = {
+  editingOutfit: SavedOutfit | null;
+  onStartFresh: () => void;
+};
+
 function makeInitialSelections(wardrobe: ClothingItem[]): OutfitSelections {
   return outfitSlots.reduce<OutfitSelections>((selections, { slot }) => {
     const firstItem = getItemsForSlot(wardrobe, slot)[0];
@@ -39,10 +44,10 @@ function makeInitialSelections(wardrobe: ClothingItem[]): OutfitSelections {
   }, {});
 }
 
-export function OutfitBuilder() {
+export function OutfitBuilder({ editingOutfit, onStartFresh }: OutfitBuilderProps) {
   const [wardrobe] = useState<ClothingItem[]>(() => loadFromStorage(STORAGE_KEYS.wardrobe, starterWardrobe));
   const [avatar] = useState<AvatarProfile>(() => loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar));
-  const [selections, setSelections] = useState<OutfitSelections>(() => makeInitialSelections(wardrobe));
+  const [selections, setSelections] = useState<OutfitSelections>(() => editingOutfit?.selections ?? makeInitialSelections(wardrobe));
   const [saveMessage, setSaveMessage] = useState("");
 
   const itemsBySlot = useMemo(
@@ -88,7 +93,7 @@ export function OutfitBuilder() {
     }
 
     const savedOutfits = loadFromStorage<SavedOutfit[]>(STORAGE_KEYS.savedOutfits, []);
-    const suggestedName = `Look ${savedOutfits.length + 1}`;
+    const suggestedName = editingOutfit?.name ?? `Look ${savedOutfits.length + 1}`;
     const enteredName = window.prompt("Give this look a name", suggestedName);
 
     if (enteredName === null) {
@@ -97,15 +102,19 @@ export function OutfitBuilder() {
 
     const now = new Date().toISOString();
     const savedOutfit: SavedOutfit = {
-      id: createFitMeId("outfit"),
+      id: editingOutfit?.id ?? createFitMeId("outfit"),
       name: enteredName.trim() || suggestedName,
       selections,
-      createdAt: now,
+      createdAt: editingOutfit?.createdAt ?? now,
       updatedAt: now,
     };
 
-    saveToStorage(STORAGE_KEYS.savedOutfits, [savedOutfit, ...savedOutfits]);
-    setSaveMessage(`“${savedOutfit.name}” is tucked into your saved looks.`);
+    const nextSavedOutfits = editingOutfit
+      ? savedOutfits.map((outfit) => (outfit.id === savedOutfit.id ? savedOutfit : outfit))
+      : [savedOutfit, ...savedOutfits];
+
+    saveToStorage(STORAGE_KEYS.savedOutfits, nextSavedOutfits);
+    setSaveMessage(editingOutfit ? `“${savedOutfit.name}” has been updated.` : `“${savedOutfit.name}” is tucked into your saved looks.`);
   }
 
   return (
@@ -120,10 +129,13 @@ export function OutfitBuilder() {
           <h1 className="mt-4 font-display text-4xl leading-none text-fitme-plum sm:text-5xl">Play with a whole look.</h1>
           <p className="mt-4 text-base font-bold leading-7 text-fitme-plum/75 sm:text-lg">Use the little arrows to change one piece at a time. Your other layers will stay exactly where you left them.</p>
           </div>
-          <button type="button" onClick={saveCurrentOutfit} className="fitme-tap inline-flex items-center gap-2 rounded-2xl border-2 border-fitme-plum bg-fitme-blush px-4 py-3 text-sm font-black text-white shadow-[0_4px_0_rgb(87_41_88_/_34%)] focus-visible:outline-2 focus-visible:outline-offset-4">
-            <BookmarkPlus className="size-4" aria-hidden="true" />
-            Save this look
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {editingOutfit && <button type="button" onClick={onStartFresh} className="fitme-tap rounded-2xl border-2 border-fitme-plum/30 bg-white/70 px-4 py-3 text-sm font-black text-fitme-plum">Start fresh</button>}
+            <button type="button" onClick={saveCurrentOutfit} className="fitme-tap inline-flex items-center gap-2 rounded-2xl border-2 border-fitme-plum bg-fitme-blush px-4 py-3 text-sm font-black text-white shadow-[0_4px_0_rgb(87_41_88_/_34%)] focus-visible:outline-2 focus-visible:outline-offset-4">
+              <BookmarkPlus className="size-4" aria-hidden="true" />
+              {editingOutfit ? "Update this look" : "Save this look"}
+            </button>
+          </div>
         </div>
       </section>
 

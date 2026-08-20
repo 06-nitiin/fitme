@@ -10,7 +10,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { BrandMark } from "./BrandMark";
 
-export type AppSection = "home" | "wardrobe" | "builder" | "avatar";
+export type AppSection = "home" | "wardrobe" | "builder" | "outfits" | "avatar";
 
 type AppShellProps = {
   activeSection: AppSection;
@@ -29,7 +29,7 @@ const navigation: NavigationItem[] = [
   { id: "home", label: "Home", icon: House, isReady: true },
   { id: "wardrobe", label: "My Wardrobe", icon: Shirt, isReady: true },
   { id: "builder", label: "Outfit Builder", icon: Sparkles, isReady: true },
-  { id: "outfits", label: "Saved Outfits", icon: Bookmark },
+  { id: "outfits", label: "Saved Outfits", icon: Bookmark, isReady: true },
   { id: "avatar", label: "My Avatar", icon: UserRound, isReady: true },
   { id: "settings", label: "Settings", icon: Settings2 },
 ];
@@ -42,7 +42,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
   const currentTitle = getSectionTitle(activeSection);
 
   function handleNavigation(item: NavigationItem) {
-    if (item.id === "home" || item.id === "wardrobe" || item.id === "builder" || item.id === "avatar") {
+    if (item.id === "home" || item.id === "wardrobe" || item.id === "builder" || item.id === "outfits" || item.id === "avatar") {
       onNavigate(item.id);
     }
   }
@@ -86,7 +86,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
             <Sparkles className="size-4 text-fitme-blush" aria-hidden="true" />
             Style tip
           </div>
-          <p className="text-sm font-bold leading-5">Change one layer at a time and keep the pieces that feel right.</p>
+          <p className="text-sm font-bold leading-5">Save the looks that make getting dressed feel easy.</p>
         </div>
       </aside>
 
