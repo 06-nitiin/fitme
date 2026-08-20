@@ -10,6 +10,7 @@ import { createFitMeId, getItemsForSlot } from "../lib/wardrobe";
 import type { AvatarProfile, ClothingItem, OutfitRecommendation, OutfitSelections, OutfitSlot, SavedOutfit } from "../types/fitme";
 
 const defaultAvatar: AvatarProfile = {
+  presentation: "Feminine",
   skinTone: "Peach",
   hairStyle: "Soft waves",
   hairColor: "Brown",
@@ -46,7 +47,10 @@ function makeInitialSelections(wardrobe: ClothingItem[]): OutfitSelections {
 
 export function OutfitBuilder({ editingOutfit, onStartFresh }: OutfitBuilderProps) {
   const [wardrobe] = useState<ClothingItem[]>(() => loadFromStorage(STORAGE_KEYS.wardrobe, starterWardrobe));
-  const [avatar] = useState<AvatarProfile>(() => loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar));
+  const [avatar] = useState<AvatarProfile>(() => {
+    const storedAvatar = loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar);
+    return { ...defaultAvatar, ...storedAvatar };
+  });
   const [selections, setSelections] = useState<OutfitSelections>(() => editingOutfit?.selections ?? makeInitialSelections(wardrobe));
   const [saveMessage, setSaveMessage] = useState("");
 

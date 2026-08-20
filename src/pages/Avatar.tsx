@@ -6,6 +6,7 @@ import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../lib/storage";
 import type { AvatarProfile } from "../types/fitme";
 
 const defaultAvatar: AvatarProfile = {
+  presentation: "Feminine",
   skinTone: "Peach",
   hairStyle: "Soft waves",
   hairColor: "Brown",
@@ -21,9 +22,10 @@ const defaultAvatar: AvatarProfile = {
 };
 
 export function Avatar() {
-  const [avatar, setAvatar] = useState<AvatarProfile>(() =>
-    loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar),
-  );
+  const [avatar, setAvatar] = useState<AvatarProfile>(() => {
+    const storedAvatar = loadFromStorage(STORAGE_KEYS.avatar, defaultAvatar);
+    return { ...defaultAvatar, ...storedAvatar };
+  });
 
   useEffect(() => {
     saveToStorage(STORAGE_KEYS.avatar, avatar);
@@ -51,7 +53,7 @@ export function Avatar() {
   }
 
   function resetAvatar() {
-    setAvatar(defaultAvatar);
+    setAvatar({ ...defaultAvatar });
   }
 
   return (
@@ -63,9 +65,9 @@ export function Avatar() {
               <Sparkles className="size-3.5 text-fitme-blush" aria-hidden="true" />
               Avatar station
             </div>
-            <h1 className="mt-4 font-display text-4xl leading-none text-fitme-plum sm:text-5xl">Make your mini-me.</h1>
+            <h1 className="mt-4 font-display text-4xl leading-none text-fitme-plum sm:text-5xl">Make your mini-me feel like you.</h1>
             <p className="mt-4 text-base font-bold leading-7 text-fitme-plum/75 sm:text-lg">
-              Tap an option and watch your little mirror moment change right away.
+              Pick a starting presentation, then tune every detail until this little character feels at home in your wardrobe.
             </p>
           </div>
 
@@ -79,7 +81,7 @@ export function Avatar() {
           </button>
         </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(22rem,1fr)] xl:items-start">
+        <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(23rem,1fr)] xl:items-start">
           <AvatarPreview avatar={avatar} />
           <div className="fitme-inset max-h-[50rem] overflow-y-auto rounded-[1.8rem] p-5 sm:p-7">
             <div className="mb-6 border-b-2 border-dashed border-fitme-plum/30 pb-4">
@@ -92,9 +94,9 @@ export function Avatar() {
       </section>
 
       <aside className="rounded-3xl border-2 border-dashed border-fitme-plum/35 bg-white/50 p-5 text-fitme-plum">
-        <p className="font-display text-lg">Saved in your style space</p>
+        <p className="font-display text-lg">Made to be styled, not boxed in</p>
         <p className="mt-1 text-sm font-bold leading-6 text-fitme-plum/70">
-          Try a few combinations, then refresh the browser. Your mini-me should look exactly the same when you return.
+          Feminine, masculine, and neutral are simply starting character vibes. Every hair, face, body, and accessory choice stays open to everyone.
         </p>
       </aside>
     </div>

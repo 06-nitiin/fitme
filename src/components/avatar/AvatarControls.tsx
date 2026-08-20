@@ -1,6 +1,7 @@
 import type { AvatarProfile } from "../../types/fitme";
 
 export type AppearanceField =
+  | "presentation"
   | "skinTone"
   | "hairStyle"
   | "hairColor"
@@ -21,6 +22,7 @@ type AvatarControlsProps = {
 
 type OptionGroupProps = {
   label: string;
+  hint?: string;
   options: string[];
   selectedValue: string;
   onSelect: (value: string) => void;
@@ -50,10 +52,11 @@ const eyeColours: Record<string, string> = {
   Green: "#5f9474",
 };
 
-function OptionGroup({ label, options, selectedValue, onSelect, colourOptions }: OptionGroupProps) {
+function OptionGroup({ label, hint, options, selectedValue, onSelect, colourOptions }: OptionGroupProps) {
   return (
     <fieldset>
       <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">{label}</legend>
+      {hint && <p className="mt-1 text-xs font-bold leading-5 text-fitme-plum/60">{hint}</p>}
       <div className="mt-2 flex flex-wrap gap-2">
         {options.map((option) => {
           const isSelected = option === selectedValue;
@@ -110,93 +113,41 @@ export function AvatarControls({ avatar, onChange, onToggleAccessory }: AvatarCo
   return (
     <div className="space-y-7">
       <OptionGroup
-        label="Skin tone"
-        options={Object.keys(skinToneColours)}
-        selectedValue={avatar.skinTone}
-        onSelect={(value) => onChange("skinTone", value)}
-        colourOptions={skinToneColours}
+        label="Start with a character vibe"
+        hint="This changes the starting silhouette only. Every detail below stays yours to choose."
+        options={["Feminine", "Masculine", "Neutral"]}
+        selectedValue={avatar.presentation ?? "Feminine"}
+        onSelect={(value) => onChange("presentation", value)}
       />
-      <OptionGroup
-        label="Hair style"
-        options={["Soft waves", "Curly bob", "High ponytail", "Buzzed"]}
-        selectedValue={avatar.hairStyle}
-        onSelect={(value) => onChange("hairStyle", value)}
-      />
-      <OptionGroup
-        label="Hair colour"
-        options={Object.keys(hairColours)}
-        selectedValue={avatar.hairColor}
-        onSelect={(value) => onChange("hairColor", value)}
-        colourOptions={hairColours}
-      />
-      <OptionGroup
-        label="Face shape"
-        options={["Oval", "Round", "Heart", "Square"]}
-        selectedValue={avatar.faceShape}
-        onSelect={(value) => onChange("faceShape", value)}
-      />
-      <OptionGroup
-        label="Eye colour"
-        options={Object.keys(eyeColours)}
-        selectedValue={avatar.eyeColor}
-        onSelect={(value) => onChange("eyeColor", value)}
-        colourOptions={eyeColours}
-      />
+      <div className="border-t-2 border-dashed border-fitme-plum/25 pt-7">
+        <p className="font-display text-lg text-fitme-plum">Face and hair</p>
+      </div>
+      <OptionGroup label="Skin tone" options={Object.keys(skinToneColours)} selectedValue={avatar.skinTone} onSelect={(value) => onChange("skinTone", value)} colourOptions={skinToneColours} />
+      <OptionGroup label="Hair style" options={["Soft waves", "Curly bob", "High ponytail", "Buzzed"]} selectedValue={avatar.hairStyle} onSelect={(value) => onChange("hairStyle", value)} />
+      <OptionGroup label="Hair colour" options={Object.keys(hairColours)} selectedValue={avatar.hairColor} onSelect={(value) => onChange("hairColor", value)} colourOptions={hairColours} />
+      <OptionGroup label="Face shape" options={["Oval", "Round", "Heart", "Square"]} selectedValue={avatar.faceShape} onSelect={(value) => onChange("faceShape", value)} />
+      <OptionGroup label="Eye colour" options={Object.keys(eyeColours)} selectedValue={avatar.eyeColor} onSelect={(value) => onChange("eyeColor", value)} colourOptions={eyeColours} />
 
       <fieldset>
         <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Glasses</legend>
-        <div className="mt-2">
-          <ToggleButton label={avatar.glasses ? "Glasses on" : "Glasses off"} isSelected={avatar.glasses} onClick={() => onChange("glasses", !avatar.glasses)} />
-        </div>
+        <div className="mt-2"><ToggleButton label={avatar.glasses ? "Glasses on" : "Glasses off"} isSelected={avatar.glasses} onClick={() => onChange("glasses", !avatar.glasses)} /></div>
       </fieldset>
 
-      <div className="border-t-2 border-dashed border-fitme-plum/25 pt-7">
-        <p className="font-display text-lg text-fitme-plum">A few more you-details</p>
-      </div>
-
-      <OptionGroup
-        label="Facial hair"
-        options={["None", "Light stubble", "Short beard", "Moustache"]}
-        selectedValue={avatar.facialHair}
-        onSelect={(value) => onChange("facialHair", value)}
-      />
-      <OptionGroup
-        label="Height"
-        options={["Petite", "Average", "Tall"]}
-        selectedValue={avatar.height}
-        onSelect={(value) => onChange("height", value)}
-      />
-      <OptionGroup
-        label="Build"
-        options={["Slim", "Balanced", "Athletic", "Curvy"]}
-        selectedValue={avatar.build}
-        onSelect={(value) => onChange("build", value)}
-      />
-      <OptionGroup
-        label="General proportions"
-        options={["Balanced", "Broad shoulders", "Soft curves"]}
-        selectedValue={avatar.proportions}
-        onSelect={(value) => onChange("proportions", value)}
-      />
+      <div className="border-t-2 border-dashed border-fitme-plum/25 pt-7"><p className="font-display text-lg text-fitme-plum">A few more you-details</p></div>
+      <OptionGroup label="Facial hair" options={["None", "Light stubble", "Short beard", "Moustache"]} selectedValue={avatar.facialHair} onSelect={(value) => onChange("facialHair", value)} />
+      <OptionGroup label="Height" options={["Petite", "Average", "Tall"]} selectedValue={avatar.height} onSelect={(value) => onChange("height", value)} />
+      <OptionGroup label="Build" options={["Slim", "Balanced", "Athletic", "Curvy"]} selectedValue={avatar.build} onSelect={(value) => onChange("build", value)} />
+      <OptionGroup label="General proportions" options={["Balanced", "Broad shoulders", "Soft curves"]} selectedValue={avatar.proportions} onSelect={(value) => onChange("proportions", value)} />
 
       <fieldset>
-        <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Tattoo</legend>
-        <div className="mt-2">
-          <ToggleButton label={avatar.tattoos ? "Tiny tattoo on" : "No tattoo"} isSelected={avatar.tattoos} onClick={() => onChange("tattoos", !avatar.tattoos)} />
-        </div>
+        <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Tiny tattoo</legend>
+        <div className="mt-2"><ToggleButton label={avatar.tattoos ? "Tiny tattoo on" : "No tattoo"} isSelected={avatar.tattoos} onClick={() => onChange("tattoos", !avatar.tattoos)} /></div>
       </fieldset>
 
       <fieldset>
         <legend className="text-xs font-black uppercase tracking-[0.14em] text-fitme-plum/70">Accessories</legend>
         <div className="mt-2 flex flex-wrap gap-2">
-          {accessoryOptions.map((accessory) => (
-            <ToggleButton
-              key={accessory}
-              label={accessory}
-              isSelected={avatar.accessories.includes(accessory)}
-              onClick={() => onToggleAccessory(accessory)}
-            />
-          ))}
+          {accessoryOptions.map((accessory) => <ToggleButton key={accessory} label={accessory} isSelected={avatar.accessories.includes(accessory)} onClick={() => onToggleAccessory(accessory)} />)}
         </div>
       </fieldset>
     </div>

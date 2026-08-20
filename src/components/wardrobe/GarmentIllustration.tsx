@@ -22,8 +22,8 @@ function getGarmentColour(colour: string): string {
 export function GarmentIllustration({ item }: GarmentIllustrationProps) {
   if (item.imageUrl) {
     return (
-      <div className="h-40 overflow-hidden rounded-2xl border-2 border-fitme-plum/20 bg-white/70">
-        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+      <div className="flex h-40 items-center justify-center overflow-hidden rounded-2xl border-2 border-fitme-plum/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,230,241,0.68))] p-3">
+        <img src={item.imageUrl} alt={item.name} className="max-h-full max-w-full rounded-xl object-contain" />
       </div>
     );
   }
@@ -86,4 +86,3 @@ export function GarmentIllustration({ item }: GarmentIllustrationProps) {
     </div>
   );
 }
-

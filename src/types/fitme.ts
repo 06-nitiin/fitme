@@ -28,7 +28,10 @@ export type ClothingItem = {
   createdAt: string;
 };
 
+export type AvatarPresentation = "Feminine" | "Masculine" | "Neutral";
+
 export type AvatarProfile = {
+  presentation: AvatarPresentation;
   skinTone: string;
   hairStyle: string;
   hairColor: string;

@@ -118,7 +118,7 @@ export function ClothingForm({ initialItem, onCancel, onSave }: ClothingFormProp
           <label className="flex min-h-48 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed border-fitme-plum/35 bg-pink-50/70 p-4 text-center">
             <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={handleImageChange} />
             {draft.imageUrl ? (
-              <img src={draft.imageUrl} alt="Selected clothing preview" className="h-40 w-full rounded-2xl object-cover" />
+              <span className="flex h-40 w-full items-center justify-center rounded-2xl bg-white/75 p-3"><img src={draft.imageUrl} alt="Selected clothing preview" className="max-h-full max-w-full rounded-xl object-contain" /></span>
             ) : (
               <>
                 <span className="grid size-12 place-items-center rounded-2xl border-2 border-fitme-plum/35 bg-fitme-cream text-fitme-plum">
