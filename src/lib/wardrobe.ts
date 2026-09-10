@@ -25,14 +25,17 @@ export function filterWardrobe(
   wardrobe: ClothingItem[],
   searchTerm: string,
   category?: ClothingCategory,
+  color?: string,
 ): ClothingItem[] {
   const normalisedSearch = searchTerm.trim().toLowerCase();
+  const normalisedColor = color?.trim().toLowerCase();
 
   return wardrobe.filter((item) => {
     const matchesCategory = !category || item.category === category;
+    const matchesColor = !normalisedColor || item.color.toLowerCase().includes(normalisedColor);
 
     if (!normalisedSearch) {
-      return matchesCategory;
+      return matchesCategory && matchesColor;
     }
 
     const searchableDetails = [item.name, item.category, item.color, item.brand, item.notes]
@@ -40,7 +43,7 @@ export function filterWardrobe(
       .join(" ")
       .toLowerCase();
 
-    return matchesCategory && searchableDetails.includes(normalisedSearch);
+    return matchesCategory && matchesColor && searchableDetails.includes(normalisedSearch);
   });
 }
 

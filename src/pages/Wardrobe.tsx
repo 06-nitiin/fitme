@@ -9,12 +9,16 @@ import { CLOTHING_CATEGORIES, type ClothingCategory, type ClothingItem } from ".
 
 type CategoryFilter = "All" | ClothingCategory;
 
+const COLOR_FILTERS = ["All", "Black", "White", "Blue", "Brown", "Green", "Grey", "Pink", "Red", "Yellow"] as const;
+type ColorFilter = (typeof COLOR_FILTERS)[number];
+
 export function Wardrobe() {
   const [wardrobe, setWardrobe] = useState<ClothingItem[]>(() =>
     loadFromStorage(STORAGE_KEYS.wardrobe, starterWardrobe),
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("All");
+  const [selectedColor, setSelectedColor] = useState<ColorFilter>("All");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
   const [importMessage, setImportMessage] = useState("");
@@ -24,8 +28,13 @@ export function Wardrobe() {
   }, [wardrobe]);
 
   const visibleWardrobe = useMemo(
-    () => filterWardrobe(wardrobe, searchTerm, selectedCategory === "All" ? undefined : selectedCategory),
-    [wardrobe, searchTerm, selectedCategory],
+    () => filterWardrobe(
+      wardrobe,
+      searchTerm,
+      selectedCategory === "All" ? undefined : selectedCategory,
+      selectedColor === "All" ? undefined : selectedColor,
+    ),
+    [wardrobe, searchTerm, selectedCategory, selectedColor],
   );
 
   function openAddForm() {
@@ -143,7 +152,7 @@ export function Wardrobe() {
           {importMessage && <p role="status" className="text-xs font-bold text-fitme-plum/70">{importMessage}</p>}
         </div>
 
-        <div className="mt-8 grid gap-3 lg:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_15rem_11rem]">
           <label className="relative block">
             <span className="sr-only">Search your wardrobe</span>
             <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-fitme-plum/55" aria-hidden="true" />
@@ -168,16 +177,30 @@ export function Wardrobe() {
               ))}
             </select>
           </label>
+
+          <label>
+            <span className="sr-only">Filter by colour</span>
+            <select
+              value={selectedColor}
+              onChange={(event) => setSelectedColor(event.target.value as ColorFilter)}
+              className="w-full rounded-2xl border-2 border-fitme-plum/35 bg-white/75 px-4 py-3 text-sm font-bold text-fitme-plum outline-none transition focus:border-fitme-plum focus:ring-2 focus:ring-pink-200"
+            >
+              {COLOR_FILTERS.map((color) => (
+                <option key={color} value={color}>{color === "All" ? "All colours" : color}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3 text-sm font-bold text-fitme-plum/65">
           <p>{visibleWardrobe.length} {visibleWardrobe.length === 1 ? "piece" : "pieces"} on this rail</p>
-          {(searchTerm || selectedCategory !== "All") && (
+          {(searchTerm || selectedCategory !== "All" || selectedColor !== "All") && (
             <button
               type="button"
               onClick={() => {
                 setSearchTerm("");
                 setSelectedCategory("All");
+                setSelectedColor("All");
               }}
               className="fitme-tap text-xs font-black text-fitme-plum underline decoration-dashed underline-offset-4"
             >
