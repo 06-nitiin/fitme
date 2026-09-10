@@ -49,6 +49,12 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
 
   return (
     <div className="min-h-screen pb-24 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:pb-0">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:border-2 focus:border-fitme-plum focus:bg-fitme-cream focus:px-4 focus:py-3 focus:font-black focus:text-fitme-plum focus:shadow-[0_3px_0_rgb(87_41_88_/_28%)]"
+      >
+        Skip to main content
+      </a>
       <aside className="hidden min-h-screen border-r-2 border-fitme-plum/25 bg-fitme-lavender/80 px-4 py-6 backdrop-blur lg:flex lg:flex-col">
         <div className="mb-11">
           <BrandMark />
@@ -90,7 +96,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
         </div>
       </aside>
 
-      <main className="min-w-0">
+      <main id="main-content" tabIndex={-1} className="min-w-0 scroll-mt-20 outline-none">
         <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b-2 border-fitme-plum/20 bg-[#fbf4ff]/90 px-5 backdrop-blur-md sm:px-8 lg:px-10">
           <div className="flex items-center gap-3">
             <div className="lg:hidden">
@@ -128,6 +134,7 @@ export function AppShell({ activeSection, onNavigate, children }: AppShellProps)
               disabled={!item.isReady}
               onClick={() => handleNavigation(item)}
               aria-current={isActive ? "page" : undefined}
+              aria-label={item.label}
               title={item.isReady ? undefined : `${item.label} is coming in a later milestone`}
               className={`grid min-w-12 place-items-center rounded-2xl px-2 py-1.5 text-fitme-plum ${
                 isActive ? "bg-pink-200 shadow-[0_2px_0_rgb(87_41_88_/_26%)]" : "opacity-55"
