@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Plus, Search, Shirt, Sparkles } from "lucide-react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { Download, FileUp, Plus, Search, Shirt, Sparkles } from "lucide-react";
 import { ClothingCard } from "../components/wardrobe/ClothingCard";
 import { ClothingForm, type ClothingFormValues } from "../components/wardrobe/ClothingForm";
 import { starterWardrobe } from "../data/starterWardrobe";
 import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../lib/storage";
-import { createFitMeId, filterWardrobe } from "../lib/wardrobe";
+import { createFitMeId, exportWardrobeData, filterWardrobe, importWardrobeData } from "../lib/wardrobe";
 import { CLOTHING_CATEGORIES, type ClothingCategory, type ClothingItem } from "../types/fitme";
 
 type CategoryFilter = "All" | ClothingCategory;
@@ -17,6 +17,7 @@ export function Wardrobe() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("All");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
+  const [importMessage, setImportMessage] = useState("");
 
   useEffect(() => {
     saveToStorage(STORAGE_KEYS.wardrobe, wardrobe);
@@ -73,6 +74,37 @@ export function Wardrobe() {
     setWardrobe((currentWardrobe) => currentWardrobe.filter((currentItem) => currentItem.id !== item.id));
   }
 
+  function handleExport() {
+    const file = new Blob([exportWardrobeData(wardrobe)], { type: "application/json" });
+    const downloadUrl = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `fitme-wardrobe-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(downloadUrl);
+    setImportMessage("Wardrobe backup downloaded.");
+  }
+
+  function handleImport(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const importedItems = importWardrobeData(String(reader.result));
+        setWardrobe((currentWardrobe) => [...importedItems, ...currentWardrobe]);
+        setImportMessage(`${importedItems.length} ${importedItems.length === 1 ? "piece" : "pieces"} imported.`);
+      } catch (error) {
+        setImportMessage(error instanceof Error ? error.message : "That backup could not be imported.");
+      }
+    };
+    reader.onerror = () => setImportMessage("That backup could not be read. Please try another file.");
+    reader.readAsText(file);
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <section className="fitme-panel overflow-hidden p-5 sm:p-8">
@@ -96,6 +128,19 @@ export function Wardrobe() {
             <Plus className="size-4" aria-hidden="true" />
             Add clothing
           </button>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <button type="button" onClick={handleExport} className="fitme-tap inline-flex items-center gap-2 rounded-xl border-2 border-fitme-plum/35 bg-white/70 px-3 py-2 text-xs font-black text-fitme-plum">
+            <Download className="size-3.5" aria-hidden="true" />
+            Export wardrobe
+          </button>
+          <label className="fitme-tap inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-fitme-plum/35 bg-white/70 px-3 py-2 text-xs font-black text-fitme-plum">
+            <FileUp className="size-3.5" aria-hidden="true" />
+            Import wardrobe
+            <input type="file" accept="application/json,.json" className="sr-only" onChange={handleImport} />
+          </label>
+          {importMessage && <p role="status" className="text-xs font-bold text-fitme-plum/70">{importMessage}</p>}
         </div>
 
         <div className="mt-8 grid gap-3 lg:grid-cols-[minmax(0,1fr)_15rem]">
