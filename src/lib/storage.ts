@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   avatar: "fitme:avatar",
   savedOutfits: "fitme:saved-outfits",
   wardrobe: "fitme:wardrobe",
+  onboardingDismissed: "fitme:onboarding-dismissed",
 } as const;
 
 export function loadFromStorage<T>(key: string, fallback: T): T {

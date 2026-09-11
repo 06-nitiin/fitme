@@ -1,4 +1,6 @@
-import { ArrowRight, Heart, Shirt, Sparkles, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Heart, Shirt, Sparkles, UserRound, X } from "lucide-react";
+import { loadFromStorage, saveToStorage, STORAGE_KEYS } from "../lib/storage";
 
 const firstSteps = [
   {
@@ -59,8 +61,48 @@ function MiniWardrobeScene() {
 }
 
 export function Home() {
+  const [showOnboarding, setShowOnboarding] = useState(() => !loadFromStorage(STORAGE_KEYS.onboardingDismissed, false));
+
+  useEffect(() => {
+    if (showOnboarding) {
+      saveToStorage(STORAGE_KEYS.onboardingDismissed, false);
+    }
+  }, [showOnboarding]);
+
+  function dismissOnboarding() {
+    setShowOnboarding(false);
+    saveToStorage(STORAGE_KEYS.onboardingDismissed, true);
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8">
+      {showOnboarding && (
+        <section className="fitme-panel relative overflow-hidden border-fitme-blush/70 bg-pink-50/90 p-5 sm:p-7" aria-labelledby="welcome-title">
+          <button
+            type="button"
+            onClick={dismissOnboarding}
+            aria-label="Dismiss welcome guide"
+            className="fitme-tap absolute right-4 top-4 grid size-9 place-items-center rounded-xl border-2 border-fitme-plum/25 bg-white/70 text-fitme-plum"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
+          <div className="max-w-3xl pr-10">
+            <p className="inline-flex items-center gap-2 rounded-full border-2 border-fitme-plum/30 bg-fitme-cream px-3 py-1.5 text-xs font-black uppercase tracking-[0.13em] text-fitme-plum">
+              <Sparkles className="size-3.5 text-fitme-blush" aria-hidden="true" />
+              First visit guide
+            </p>
+            <h2 id="welcome-title" className="mt-4 font-display text-3xl leading-none text-fitme-plum sm:text-4xl">Welcome to your little style space.</h2>
+            <p className="mt-3 text-sm font-bold leading-6 text-fitme-plum/75 sm:text-base">FitMe starts with sample pieces so you can try the full loop before adding your own clothes.</p>
+            <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+              <li className="rounded-2xl border-2 border-fitme-plum/20 bg-white/65 p-3 text-sm font-bold text-fitme-plum"><strong className="block font-display text-lg text-fitme-blush">01</strong>Shape your avatar.</li>
+              <li className="rounded-2xl border-2 border-fitme-plum/20 bg-white/65 p-3 text-sm font-bold text-fitme-plum"><strong className="block font-display text-lg text-fitme-blush">02</strong>Explore the sample wardrobe.</li>
+              <li className="rounded-2xl border-2 border-fitme-plum/20 bg-white/65 p-3 text-sm font-bold text-fitme-plum"><strong className="block font-display text-lg text-fitme-blush">03</strong>Build and save a look.</li>
+            </ol>
+            <button type="button" onClick={dismissOnboarding} className="fitme-tap mt-5 rounded-xl border-2 border-fitme-plum bg-fitme-blush px-4 py-2.5 text-sm font-black text-white shadow-[0_3px_0_rgb(87_41_88_/_28%)]">Let’s style</button>
+          </div>
+        </section>
+      )}
+
       <section className="fitme-panel relative isolate overflow-hidden px-6 py-8 sm:px-10 sm:py-11 lg:grid lg:min-h-[27rem] lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.85fr)] lg:items-center lg:gap-10">
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_11%_15%,rgba(255,255,255,0.9)_0_1px,transparent_1.5px),linear-gradient(135deg,rgba(255,255,255,0.55),rgba(250,219,237,0.35))] bg-[size:22px_22px,100%_100%]" />
         <div className="absolute -left-8 bottom-2 -z-10 size-32 rounded-full bg-pink-200/65 blur-2xl" />
