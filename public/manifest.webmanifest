@@ -1,0 +1,20 @@
+{
+  "name": "FitMe — Your Digital Dressing Room",
+  "short_name": "FitMe",
+  "description": "Build outfits from the clothes you already own.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0e4ff",
+  "theme_color": "#f0e4ff",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
