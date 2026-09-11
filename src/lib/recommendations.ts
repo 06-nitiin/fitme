@@ -70,3 +70,54 @@ export function createOutfitRecommendations(wardrobe: ClothingItem[]): OutfitRec
     }))
     .filter((recommendation) => Object.keys(recommendation.selections).length > 0);
 }
+
+const neutralColours = ["black", "white", "grey", "gray", "beige", "cream", "brown", "navy"];
+
+function normaliseColour(colour: string): string {
+  return colour.trim().toLowerCase();
+}
+
+function scoreColourCoordination(items: ClothingItem[]): number {
+  if (items.length < 2) return 18;
+
+  const colours = items.map((item) => normaliseColour(item.color));
+  const uniqueColours = new Set(colours);
+  const neutralCount = colours.filter((colour) => neutralColours.some((neutral) => colour.includes(neutral))).length;
+
+  if (uniqueColours.size === 1) return 35;
+  if (neutralCount >= 1) return 32;
+  if (uniqueColours.size <= 2) return 28;
+  if (uniqueColours.size === 3) return 22;
+  return 16;
+}
+
+function scoreStyleFit(items: ClothingItem[], rule: StyleRule | undefined): number {
+  if (!rule) return 0;
+
+  const colourMatches = items.filter((item) =>
+    Object.values(rule.preferredColours).some((colours) =>
+      colours?.some((colour) => normaliseColour(item.color).includes(normaliseColour(colour))),
+    ),
+  ).length;
+  const categoryPreferences = Object.values(rule.preferredCategories ?? {}).flat();
+  const categoryMatches = items.filter((item) => categoryPreferences.includes(item.category)).length;
+  const colourPoints = items.length ? Math.round((colourMatches / items.length) * 15) : 0;
+  const categoryPoints = items.length && categoryPreferences.length
+    ? Math.round((categoryMatches / items.length) * 10)
+    : 5;
+
+  return Math.min(25, colourPoints + categoryPoints);
+}
+
+export function scoreOutfitRecommendation(
+  recommendation: OutfitRecommendation,
+  wardrobe: ClothingItem[],
+): number {
+  const selectedItems = Object.values(recommendation.selections)
+    .map((itemId) => wardrobe.find((item) => item.id === itemId))
+    .filter((item): item is ClothingItem => Boolean(item));
+  const completenessPoints = Math.min(40, selectedItems.length * 8);
+  const rule = styleRules.find((styleRule) => styleRule.style === recommendation.style);
+
+  return Math.min(100, completenessPoints + scoreColourCoordination(selectedItems) + scoreStyleFit(selectedItems, rule));
+}

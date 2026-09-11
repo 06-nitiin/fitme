@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import type { ClothingItem, OutfitRecommendation } from "../../types/fitme";
+import { scoreOutfitRecommendation } from "../../lib/recommendations";
 
 type RecommendationPanelProps = {
   recommendations: OutfitRecommendation[];
@@ -33,7 +34,13 @@ export function RecommendationPanel({ recommendations, wardrobe, onApply }: Reco
 
             return (
               <article key={recommendation.id} className="rounded-3xl border-2 border-fitme-plum/30 bg-white/60 p-4">
-                <p className="font-display text-xl text-fitme-plum">{recommendation.style}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-display text-xl text-fitme-plum">{recommendation.style}</p>
+                  <span className="shrink-0 rounded-full border-2 border-fitme-plum/25 bg-fitme-mint px-2.5 py-1 text-[0.65rem] font-black text-fitme-plum">
+                    {scoreOutfitRecommendation(recommendation, wardrobe)}/100
+                  </span>
+                </div>
+                <p className="mt-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-fitme-plum/55">colour + occasion score</p>
                 <p className="mt-2 min-h-12 text-xs font-bold leading-5 text-fitme-plum/65">{recommendation.reason}</p>
                 <ul className="mt-4 space-y-1.5 border-y-2 border-dashed border-fitme-plum/20 py-3 text-xs font-black text-fitme-plum/80">
                   {pieceNames.map((name) => <li key={name} className="truncate">• {name}</li>)}
